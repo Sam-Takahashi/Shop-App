@@ -1,0 +1,5 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+ /* global custom font */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
