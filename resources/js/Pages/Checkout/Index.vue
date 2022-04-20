@@ -85,8 +85,9 @@
                                 <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="card_element">
                                     Credit Card
                                 </label>
+                                <!-- stripe component -->
                                 <div id="card-element"></div>
-                                <p id="card-error" role="alert"></p>
+                                <p id="card-error" role="alert">{{ cardError }}</p>
                             </div>
                         </div>
                         <div class="flex justify-center">
@@ -115,7 +116,8 @@
 
 <script>
     import { defineComponent } from 'vue';
-    import { Link } from '@inertiajs/inertia-vue3';
+    import { Link } from '@inertiajs/inertia-vue3'
+    import { loadStripe } from '@stripe/stripe-js'
     import AppLayout from '@/Layouts/AppLayout'
     import OrderTotals from '@/Components/OrderTotals'
     import YellowButton from '@/Components/Buttons/YellowButton'
@@ -140,6 +142,9 @@
         },
         data() { // not using inertia for this form because we will be making Axios requests between our backend and Stripe
             return {
+                cardElement: {}, // for stripe
+                cardError: '', // for stripe
+                elements: {}, // for stripe
                 disabled: true, // enable button once form is correctly filled
                 errors: [],
                 form: { // when empty, default to empty string or vue will throw an error
@@ -154,9 +159,61 @@
                 },
                 loading: false,
                 regions,
-
+                stripe: {},
+                style: {
+                    base: {
+                        fontFamily: "Montserrat, sans-serif",
+                        fontSmoothing: "antialiased",
+                        fontSize: "16px",
+                    },
+                    invalid: {
+                        fontFamily: "Montserrat, sans-serif",
+                        color: "#ff0000",
+                        iconColor: "#ff0000",
+                    }
+                },
             }
 
+        },
+        mounted() { // lifecycle hook
+            this.initStripe()
+        },
+        methods: {
+            async initStripe() {
+                this.stripe = await loadStripe(process.env.MIX_STRIPE_KEY)
+                this.elements = this.stripe.elements()
+                this.cardElement = this.elements.create("card", {
+                    style: this.style,
+                    hidePostalCode: true,
+
+                })
+                this.cardElement.mount('#card-element')
+                this.cardElement.addEventListener('change', (event) => {
+                    this.disabled = false // enable button
+                    this.cardError = event.error ? event.error.message : ""
+                })
+            }
         }
     })
 </script>
+
+<style> 
+/* Stripe styles(tailwind-ish) */
+#card-error {
+    color: #f00;
+    text-align: center;
+    font-size: 16px;
+    line-height: 17px;
+    margin-top: 12px;
+}
+#card-element {
+    border-radius: .25rem;
+    padding: 12px;
+    --tw-border-opacity: 1;
+    border: 1px solid rgba(156, 163, 175, var(--tw-border-opacity));
+    height: 44px;
+    widows: 100%;
+    --tw-bg-opacity: 1;
+    background-color: rgba(243, 244, 246, var(--tw-bg-opacity));
+}
+</style>

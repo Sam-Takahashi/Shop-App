@@ -11,7 +11,7 @@
                 </div>
                 <div>
                 <!-- grotesque button(Yellow) -->
-                    <yellow-button href="#" as="href" class="text-sm">Secure Checkout</yellow-button>
+                    <yellow-button :href="route('checkout.index')" as="href" class="text-sm">Secure Checkout</yellow-button>
                 </div>
             </div>
             <!-- Cart Details -->
@@ -49,7 +49,7 @@
                         </div>
                     </div>
                     <div class="text-center mt-4">
-                    <yellow-button href="#" as="href" class="text-sm">Secure Checkout</yellow-button>
+                    <yellow-button :href="route('checkout.index')" as="href" class="text-sm">Secure Checkout</yellow-button>
                     </div>
                 </div>
 
